@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<cinder>
+<block
+	name="UiTree"
+	id="com.bantherewind.uitree"
+	author="Stephen Schieberl"
+	summary="Recursive user interface node"
+	git="https://github.com/bantherewind/Cinder-UiTree.git"
+	version="0.0"
+	>
+	<supports os="ios" />
+	<supports os="macosx" />
+	<supports os="msw" />
+	<header>src/UiTree.h</header>
+	<includePath>src</includePath>
+</block>
+<template>templates/Basic/template.xml</template>
+</cinder>
