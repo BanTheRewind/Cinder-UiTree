@@ -392,6 +392,15 @@ public:
 		return *this;
 	}
 
+	inline ci::mat4 calcModelMatrix() const
+	{
+		ci::mat4 m( 1.0f );
+		m = glm::translate( m, mTranslate - mRegistration );
+		m *= glm::toMat4( mRotation );
+		m = glm::scale( m, mScale );
+		return m;
+	}
+
 	inline UiTreeT<T>& registration( const ci::vec2& v, float speed = 1.0f )
 	{
 		setRegistration( v, speed );
