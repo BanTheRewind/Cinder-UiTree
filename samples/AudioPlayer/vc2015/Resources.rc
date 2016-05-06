@@ -1,0 +1,13 @@
+#include "../include/Resources.h"
+
+1	ICON	"..\\resources\\cinder_app_icon.ico"
+
+RES_PNG_CLOSE
+RES_PNG_DRAG
+RES_PNG_FORWARD
+RES_PNG_PAUSE
+RES_PNG_PLAY
+RES_PNG_REWIND
+RES_PNG_SCRUB
+RES_SAMPLE
+ 
