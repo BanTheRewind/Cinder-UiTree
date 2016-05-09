@@ -1,14 +1,15 @@
 #include "cinder/app/App.h"
+#include "cinder/app/RendererGl.h"
 #include "cinder/audio/audio.h"
 #include "cinder/gl/gl.h"
 
 #include "Button.h"
+#include "Resources.h"
 #include "Slider.h"
 
+// Short hand for mapping node IDs to cached textures.
 typedef std::map<NodeId, ci::gl::Texture2dRef> IdTextureMap;
 
-#include "cinder/app/RendererGl.h"
-#include "Resources.h"
 
 class AudioPlayerApp : public ci::app::App
 {
@@ -19,17 +20,27 @@ public:
 	void							resize() override;
 	void							update() override;
 private:
+	// The UI tree.
+	UiTree							mUiTree;
+
+	// Recursive methods for walking the tree.
 	void							drawTree( const UiTree& node );
+	void							showTree( UiTree& node );
+
+	// These controls are UiTree::EventHandler implementations.
 	Button							mButtonForward;
 	Button							mButtonPlay;
 	Button							mButtonRewind;
-	IdTextureMap					mIdTextureMap;
 	Slider							mSlider;
-	UiTree							mUiTree;
-	void							showTree( UiTree& node );
 
+	// Caches textures associated with nodes.
+	IdTextureMap					mIdTextureMap;
+
+	// Audio playback.
 	ci::audio::BufferPlayerNodeRef	mBufferPlayerNode;
-	float							mSpeed = 0.0f;
+	float							mSpeed;
+
+	// Audio visualization.
 	ci::gl::BatchRef				mBatchWaveform;
 	std::vector<ci::vec2>			mWaveform;
 };
@@ -40,7 +51,13 @@ using namespace std;
 
 AudioPlayerApp::AudioPlayerApp()
 {
-	// Create the tree structure and connect event handlers
+	/*
+	 * Set the playback speed to zero to indicate we need 
+	 * to pause (disable the buffer player node).
+	 */
+	mSpeed = 0.0f;
+
+	// Create the tree structure and connect event handlers.
 	mUiTree.createChild( NodeId_Waveform );
 	mSlider.connect( 
 		mUiTree.createAndReturnChild( NodeId_Scrub )
@@ -55,7 +72,7 @@ AudioPlayerApp::AudioPlayerApp()
 			.enable()
 			);
 	mButtonPlay
-		.biased( false )
+		.biased( false ) // Keep button on after release.
 		.connect( 
 			mUiTree.createAndReturnChild( NodeId_Play )
 				.createChild( NodeId_PlayRect )
@@ -71,7 +88,7 @@ AudioPlayerApp::AudioPlayerApp()
 			);
 	mUiTree.enable();
 
-	// Set color for images and background rectangles
+	// Set color for images and background rectangles.
 	ColorAf colorImage	= ColorAf::black();
 	ColorAf colorRect	= ColorAf::gray( 0.87f );
 	for ( const NodeId id : { 
@@ -87,12 +104,12 @@ AudioPlayerApp::AudioPlayerApp()
 		mUiTree.find( id ).data( colorRect );
 	}
 
-	// Show all nodes, then hide the pause button
+	// Show all nodes, then hide the pause button.
 	showTree( mUiTree );
 	mUiTree.find( NodeId_PauseImage )
 		.hide();
 
-	// Load textures for image nodes
+	// Load textures for image nodes.
 	auto loadTexture = [ & ]( const DataSourceRef& dataSource ) -> gl::Texture2dRef
 	{
 		return gl::Texture2d::create( loadImage( dataSource ) );
@@ -103,10 +120,7 @@ AudioPlayerApp::AudioPlayerApp()
 	mIdTextureMap[ NodeId_RewindImage ]		= loadTexture( loadResource( RES_PNG_REWIND ) );
 	mIdTextureMap[ NodeId_ScrubImage ]		= loadTexture( loadResource( RES_PNG_SCRUB ) );
 
-	gl::enableAlphaBlending();
-	gl::enableVerticalSync();
-
-	// Load audio
+	// Load audio.
 	auto ctx = audio::Context::master();
 	if ( ctx ) {
 		ctx->enable();
@@ -120,6 +134,10 @@ AudioPlayerApp::AudioPlayerApp()
 		mBufferPlayerNode->setLoopEnabled();
 	}
 
+	// Some OpenGL settings
+	gl::enableAlphaBlending();
+	gl::enableVerticalSync();
+
 	// Call resize to do layout
 	resize();
 }
@@ -129,19 +147,23 @@ void AudioPlayerApp::draw()
 	gl::viewport( toPixels( getWindowSize() ) );
 	gl::setMatricesWindow( getWindowSize() );
 	gl::clear( Colorf::gray( 0.7f ) );
-	
+
+	// Recursively draw the tree starting with the root.	
 	drawTree( mUiTree );
 }
 
 void AudioPlayerApp::drawTree( const UiTree& node )
 {
-	// Only draw nodes which don't have children
+	// Only draw nodes which do not have children.
 	if ( node.isVisible() && node.getChildren().empty() ) {
 		NodeId id = (NodeId)node.getId();
 
+		// Draw the waveform batch if we're on the waveform node.
 		if ( id == NodeId_Waveform && mBatchWaveform ) {
 			mBatchWaveform->draw();
 		} else {
+
+			// Get this node's bounds and color.
 			Rectf rect( vec2( 0.0f ), vec2( node.getScale() ) );
 			ColorAf c = node.getData();
 			if ( 
@@ -153,9 +175,13 @@ void AudioPlayerApp::drawTree( const UiTree& node )
 				c = ColorAf::gray( 0.9f );
 			}
 			const gl::ScopedColor scopedColor( c );
+
+			// If we cached a texture for this node, draw it.
 			if ( mIdTextureMap.find( id ) != mIdTextureMap.end() ) {
 				const gl::Texture2dRef& texture = mIdTextureMap.at( id );
 				if ( id == NodeId_ScrubImage ) {
+
+					// Move the scrub handle using the slider's normalized position.
 					const float w	= (float)texture->getWidth();
 					const float x	= mSlider.getPosition() * (float)getWindowWidth() - w * 0.5f;
 					rect.x1			+= x;
@@ -163,10 +189,20 @@ void AudioPlayerApp::drawTree( const UiTree& node )
 				}
 				gl::draw( texture, texture->getBounds(), rect );
 			} else {
+
+				// Just draw a rectangle if there is no image.
 				gl::drawSolidRect( rect );
 			}
 		}
 	} else {
+
+		/*
+		 * For node's with children, recursively call this method.
+		 * Note that we're using a scoped model matrix and then 
+		 * translating to this node's position. This draws everything 
+		 * in screen space using transform data relative to each node's
+		 * parent.
+		 */
 		for ( const auto& iter : node.getChildren() ) {
 			const gl::ScopedModelMatrix scopedModelMatrix;
 			gl::translate( iter.second.getTranslate() );
@@ -177,15 +213,24 @@ void AudioPlayerApp::drawTree( const UiTree& node )
 
 void AudioPlayerApp::resize()
 {
+	// Calculate values for a grid layout.
 	float h = (float)getWindowHeight();
 	float w = (float)getWindowWidth();
-
 	float c = w / 3.0f;
 	float r = h / 5.0f;
 
+	// Columna and row position.
+	float x = 0.0f;
 	float y = 0.0f;
 
-	{ // Waveform
+	{ /* 
+	   * Create the waveform. Use the waveform node's transform
+	   * data to record points in screen space. We're only going 
+	   * to read every 3,000th sample from the left channel to 
+	   * keep the mesh simple. Because we're drawing with GL_LINES, 
+	   * each point, except the first and last, is recorded twice 
+	   * in a row.
+	   */
 		UiTree& node = mUiTree.find( NodeId_Waveform )
 			.scale( vec2( w, r * 3.0f ) + vec2( 0.0f, -1.0f ) );
 		if ( mBufferPlayerNode ) {
@@ -211,7 +256,7 @@ void AudioPlayerApp::resize()
 	}
 
 
-	{ // Scrub
+	{ // Layout the scrub bar.
 		UiTree& node = mUiTree.find( NodeId_Scrub )
 			.scale( vec2( w, r ) )
 			.translate( vec2( 0.0f, y ) );
@@ -226,9 +271,7 @@ void AudioPlayerApp::resize()
 	}
 	y += r;
 
-	// Rewind
-	float x = 0.0f;
-	{
+	{ // Rewind button.
 		UiTree& node = mUiTree.find( NodeId_Rewind )
 			.scale( vec2( c, r ) )
 			.translate( vec2( x, y ) );
@@ -243,7 +286,7 @@ void AudioPlayerApp::resize()
 		x += node.getScale().x;
 	}
 
-	{ // Play/pause
+	{ // Play/pause button.
 		UiTree& node = mUiTree.find( NodeId_Play )
 			.scale( vec2( c, r ) )
 			.translate( vec2( x, y ) );
@@ -260,7 +303,7 @@ void AudioPlayerApp::resize()
 		x += node.getScale().x;
 	}
 
-	{ // Forward
+	{ // Forward button.
 		UiTree& node = mUiTree.find( NodeId_Forward )
 			.scale( vec2( c, r ) )
 			.translate( vec2( x, y ) );
@@ -277,6 +320,13 @@ void AudioPlayerApp::resize()
 
 void AudioPlayerApp::showTree( UiTree& node )
 {
+	/*
+	 * Recursively shows all nodes in a tree. In order to 
+	 * preserve the visibility state of children, calling 
+	 * show on a node does not walk its tree. But as you can 
+	 * see by this tiny method, it's pretty easy to roll 
+	 * your own.
+	 */
 	for ( auto& iter : node.show().getChildren() ) {
 		showTree( iter.second );
 	}
@@ -284,14 +334,17 @@ void AudioPlayerApp::showTree( UiTree& node )
 
 void AudioPlayerApp::update()
 {
+	// Values used in seeking.
 	static const double s	= 0.2;
 	const double l			= mBufferPlayerNode->getNumSeconds();
 	const double e			= mBufferPlayerNode->getReadPositionTime();
 
+	// Update the scrub bar if we're not interacting with it.
 	if ( !mSlider.isDragging() && l > 0.0 ) {
 		mSlider.setPosition( (float)( e / l ) );
 	}
 
+	// Set the speed using the playhead buttons.
 	float speed = mSpeed;
 	if ( mButtonPlay.isPressed() ) {
 		mSpeed = 1.0f;
@@ -304,6 +357,11 @@ void AudioPlayerApp::update()
 	if ( mButtonForward.isPressed() ) {
 		mSpeed = 2.0f;
 	}
+
+	/*
+	 * Swap the pause / play image visibility according to 
+	 * any change in the playback speed.
+	 */
 	if ( speed != mSpeed ) {
 		mUiTree.find( NodeId_PauseImage ).setVisible( mSpeed != 0.0f );
 		mUiTree.find( NodeId_PlayImage ).setVisible( mSpeed == 0.0f );
@@ -314,6 +372,7 @@ void AudioPlayerApp::update()
 		}
 	}
 
+	// Perform seeking operations.
 	auto ctx = audio::Context::master();
 	if ( ctx ) {
 		if ( mSlider.isDragging() ) {
@@ -325,6 +384,10 @@ void AudioPlayerApp::update()
 		}
 	}
 
+	/* 
+	 * Walk through the waveform and set line colors to 
+	 * show progress. Create or update the batch.
+	 */
 	if ( mBufferPlayerNode && !mWaveform.empty() ) {
 		const float x = mSlider.getPosition() * mUiTree.find( NodeId_Waveform ).getScale().x; 
 		gl::VertBatch vb( GL_LINES );
@@ -333,7 +396,6 @@ void AudioPlayerApp::update()
 			vb.color( c );
 			vb.vertex( v );
 		}
-
 		if ( !mBatchWaveform ) {
 			mBatchWaveform = gl::Batch::create( vb, gl::getStockShader( gl::ShaderDef().color() ) );
 		} else {
