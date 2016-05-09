@@ -5,13 +5,7 @@
 enum : uint64_t
 {
 	NodeId_Root = 0, 
-		NodeId_Drag, 
-			NodeId_DragRect, 
-			NodeId_DragImage, 
-		NodeId_Close, 
-			NodeId_CloseRect, 
-			NodeId_CloseImage, 
-		NodeId_Display, 
+		NodeId_Waveform, 
 		NodeId_Scrub, 
 			NodeId_ScrubRect, 
 			NodeId_ScrubImage, 

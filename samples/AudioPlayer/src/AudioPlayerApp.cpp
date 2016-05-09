@@ -20,8 +20,6 @@ public:
 	void							update() override;
 private:
 	void							drawTree( const UiTree& node );
-	Button							mButtonClose;
-	Button							mButtonDrag;
 	Button							mButtonForward;
 	Button							mButtonPlay;
 	Button							mButtonRewind;
@@ -32,6 +30,8 @@ private:
 
 	ci::audio::BufferPlayerNodeRef	mBufferPlayerNode;
 	float							mSpeed = 0.0f;
+	ci::gl::BatchRef				mBatchWaveform;
+	std::vector<ci::vec2>			mWaveform;
 };
 
 using namespace ci;
@@ -41,19 +41,7 @@ using namespace std;
 AudioPlayerApp::AudioPlayerApp()
 {
 	// Create the tree structure and connect event handlers
-	mButtonDrag.connect( 
-		mUiTree.createAndReturnChild( NodeId_Drag )
-			.createChild( NodeId_DragRect )
-			.createChild( NodeId_DragImage ) 
-			.enable()
-			);
-	mButtonClose.connect( 
-		mUiTree.createAndReturnChild( NodeId_Close )
-			.createChild( NodeId_CloseRect )
-			.createChild( NodeId_CloseImage ) 
-			.enable()
-			);
-	mUiTree.createChild( NodeId_Display );
+	mUiTree.createChild( NodeId_Waveform );
 	mSlider.connect( 
 		mUiTree.createAndReturnChild( NodeId_Scrub )
 			.createChild( NodeId_ScrubRect )
@@ -87,15 +75,14 @@ AudioPlayerApp::AudioPlayerApp()
 	ColorAf colorImage	= ColorAf::black();
 	ColorAf colorRect	= ColorAf::gray( 0.87f );
 	for ( const NodeId id : { 
-		NodeId_CloseImage, NodeId_DragImage, NodeId_ForwardImage, 
-		NodeId_PauseImage, NodeId_PlayImage, NodeId_RewindImage, 
-		NodeId_ScrubImage
+		NodeId_ForwardImage, NodeId_PauseImage, NodeId_PlayImage, 
+		NodeId_RewindImage, NodeId_ScrubImage
 		} ) {
 		mUiTree.find( id ).data( colorImage );
 	}
 	for ( const NodeId id : { 
-		NodeId_CloseRect, NodeId_DragRect, NodeId_ForwardRect,
-		NodeId_PlayRect, NodeId_RewindRect, NodeId_ScrubRect
+		NodeId_ForwardRect, NodeId_PlayRect, 
+		NodeId_RewindRect, NodeId_ScrubRect
 		} ) {
 		mUiTree.find( id ).data( colorRect );
 	}
@@ -110,8 +97,6 @@ AudioPlayerApp::AudioPlayerApp()
 	{
 		return gl::Texture2d::create( loadImage( dataSource ) );
 	};
-	mIdTextureMap[ NodeId_CloseImage ]		= loadTexture( loadResource( RES_PNG_CLOSE ) );
-	mIdTextureMap[ NodeId_DragImage ]		= loadTexture( loadResource( RES_PNG_DRAG ) );
 	mIdTextureMap[ NodeId_ForwardImage ]	= loadTexture( loadResource( RES_PNG_FORWARD ) );
 	mIdTextureMap[ NodeId_PauseImage ]		= loadTexture( loadResource( RES_PNG_PAUSE ) );
 	mIdTextureMap[ NodeId_PlayImage ]		= loadTexture( loadResource( RES_PNG_PLAY ) );
@@ -134,7 +119,7 @@ AudioPlayerApp::AudioPlayerApp()
 		mBufferPlayerNode >> ctx->getOutput();
 		mBufferPlayerNode->setLoopEnabled();
 	}
-	
+
 	// Call resize to do layout
 	resize();
 }
@@ -153,25 +138,33 @@ void AudioPlayerApp::drawTree( const UiTree& node )
 	// Only draw nodes which don't have children
 	if ( node.isVisible() && node.getChildren().empty() ) {
 		NodeId id = (NodeId)node.getId();
-		Rectf rect( vec2( 0.0f ), vec2( node.getScale() ) );
 
-		ColorAf c = node.getData();
-		if ( 
-			( id == NodeId_DragRect		&& mButtonDrag.isPressed() ) || 
-			( id == NodeId_ForwardRect	&& mButtonForward.isPressed() ) || 
-			( id == NodeId_RewindRect	&& mButtonRewind.isPressed() ) || 
-			( id == NodeId_PlayRect		&& mButtonPlay.isPressed() ) || 
-			( id == NodeId_ScrubRect	&& mSlider.isDragging() )
-			 ) {
-			c = ColorAf::gray( 0.9f );
-		}
-
-		const gl::ScopedColor scopedColor( c );
-		if ( mIdTextureMap.find( id ) != mIdTextureMap.end() ) {
-			const gl::Texture2dRef& texture = mIdTextureMap.at( id );
-			gl::draw( texture, texture->getBounds(), rect );
+		if ( id == NodeId_Waveform && mBatchWaveform ) {
+			mBatchWaveform->draw();
 		} else {
-			gl::drawSolidRect( rect );
+			Rectf rect( vec2( 0.0f ), vec2( node.getScale() ) );
+			ColorAf c = node.getData();
+			if ( 
+				( id == NodeId_ForwardRect	&& mButtonForward.isPressed() ) || 
+				( id == NodeId_RewindRect	&& mButtonRewind.isPressed() ) || 
+				( id == NodeId_PlayRect		&& mButtonPlay.isPressed() ) || 
+				( id == NodeId_ScrubRect	&& mSlider.isDragging() )
+					) {
+				c = ColorAf::gray( 0.9f );
+			}
+			const gl::ScopedColor scopedColor( c );
+			if ( mIdTextureMap.find( id ) != mIdTextureMap.end() ) {
+				const gl::Texture2dRef& texture = mIdTextureMap.at( id );
+				if ( id == NodeId_ScrubImage ) {
+					const float w	= (float)texture->getWidth();
+					const float x	= mSlider.getPosition() * (float)getWindowWidth() - w * 0.5f;
+					rect.x1			+= x;
+					rect.x2			+= x;
+				}
+				gl::draw( texture, texture->getBounds(), rect );
+			} else {
+				gl::drawSolidRect( rect );
+			}
 		}
 	} else {
 		for ( const auto& iter : node.getChildren() ) {
@@ -187,49 +180,38 @@ void AudioPlayerApp::resize()
 	float h = (float)getWindowHeight();
 	float w = (float)getWindowWidth();
 
-	float c = w / 6.0f;
-	float r = h / 6.0f;
+	float c = w / 3.0f;
+	float r = h / 5.0f;
 
 	float y = 0.0f;
 
-	// Drag bar
-	{
-		UiTree& node = mUiTree.find( NodeId_Drag )
-			.scale( vec2( c * 5.0f, r ) );
-		mUiTree.find( NodeId_DragRect )
-			.scale( vec2( node.getScale() ) + vec2( -1.0f ) );
-		if ( mIdTextureMap.find( NodeId_DragImage ) != mIdTextureMap.end() ) {
-			const vec2 sz( mIdTextureMap.at( NodeId_DragImage )->getSize() );
-			mUiTree.find( NodeId_DragImage )
-				.scale( sz )
-				.translate( ( vec2( c, r ) - sz ) * 0.5f );
+	{ // Waveform
+		UiTree& node = mUiTree.find( NodeId_Waveform )
+			.scale( vec2( w, r * 3.0f ) + vec2( 0.0f, -1.0f ) );
+		if ( mBufferPlayerNode ) {
+			const audio::BufferRef& buffer	= mBufferPlayerNode->getBuffer();
+			const float* samples			= buffer->getChannel( 0 );
+			static const size_t d			= 3000;
+
+			const vec2 s( node.getScale() );
+			const vec2 t( node.getTranslate() );
+			float x			= t.x;
+			const float w	= s.x / (float)( buffer->getNumFrames() / d );
+			for ( size_t i = 0; i < buffer->getNumFrames(); i += d ) {
+				x			+= w;
+				vec2 v( x, ( 1 - ( samples[ i ] * 0.5f + 0.5f ) ) * s.y + t.y );
+				mWaveform.push_back( v );
+				if ( mWaveform.size() > 1 ) {
+					mWaveform.push_back( v );
+				}
+			}
+			mWaveform.pop_back();
 		}
+		y += node.getScale().y;
 	}
 
-	// Close button
-	{
-		UiTree& node = mUiTree.find( NodeId_Close )
-			.scale( vec2( c, r ) )
-			.translate( vec2( c * 5.0f, 0.0f ) );
-		mUiTree.find( NodeId_CloseRect )
-			.scale( vec2( node.getScale() ) + vec2( 0.0f, -1.0f ) );
-		if ( mIdTextureMap.find( NodeId_CloseImage ) != mIdTextureMap.end() ) {
-			const vec2 sz( mIdTextureMap.at( NodeId_CloseImage )->getSize() );
-			mUiTree.find( NodeId_CloseImage )
-				.scale( sz )
-				.translate( ( vec2( node.getScale() ) - sz ) * 0.5f );
-		}
-	}
-	y += r;
 
-	// Display
-	mUiTree.find( NodeId_Display )
-		.scale( vec2( w, r * 3.0f ) + vec2( 0.0f, -1.0f ) )
-		.translate( vec2( 0.0f, y ) );
-	y += r * 3.0f;
-
-	// Scrub
-	{
+	{ // Scrub
 		UiTree& node = mUiTree.find( NodeId_Scrub )
 			.scale( vec2( w, r ) )
 			.translate( vec2( 0.0f, y ) );
@@ -248,7 +230,7 @@ void AudioPlayerApp::resize()
 	float x = 0.0f;
 	{
 		UiTree& node = mUiTree.find( NodeId_Rewind )
-			.scale( vec2( c * 2.0f, r ) )
+			.scale( vec2( c, r ) )
 			.translate( vec2( x, y ) );
 		mUiTree.find( NodeId_RewindRect )
 			.scale( vec2( node.getScale() ) + vec2( -1.0f, 0.0f ) );
@@ -261,10 +243,9 @@ void AudioPlayerApp::resize()
 		x += node.getScale().x;
 	}
 
-	// Play/pause
-	{
+	{ // Play/pause
 		UiTree& node = mUiTree.find( NodeId_Play )
-			.scale( vec2( c * 2.0f, r ) )
+			.scale( vec2( c, r ) )
 			.translate( vec2( x, y ) );
 		mUiTree.find( NodeId_PlayRect )
 			.scale( vec2( node.getScale() ) + vec2( -1.0f, 0.0f ) );
@@ -279,10 +260,9 @@ void AudioPlayerApp::resize()
 		x += node.getScale().x;
 	}
 
-	// Forward
-	{
+	{ // Forward
 		UiTree& node = mUiTree.find( NodeId_Forward )
-			.scale( vec2( c * 2.0f, r ) )
+			.scale( vec2( c, r ) )
 			.translate( vec2( x, y ) );
 		mUiTree.find( NodeId_ForwardRect )
 			.scale( vec2( node.getScale() ) );
@@ -304,9 +284,12 @@ void AudioPlayerApp::showTree( UiTree& node )
 
 void AudioPlayerApp::update()
 {
-	if ( mButtonClose.isPressed() ) {
-		quit();
-		return;
+	static const double s	= 0.2;
+	const double l			= mBufferPlayerNode->getNumSeconds();
+	const double e			= mBufferPlayerNode->getReadPositionTime();
+
+	if ( !mSlider.isDragging() && l > 0.0 ) {
+		mSlider.setPosition( (float)( e / l ) );
 	}
 
 	float speed = mSpeed;
@@ -315,31 +298,52 @@ void AudioPlayerApp::update()
 	} else {
 		mSpeed = 0.0f;
 	}
-
 	if ( mButtonRewind.isPressed() ) {
 		mSpeed = -2.0f;
 	}
-
 	if ( mButtonForward.isPressed() ) {
 		mSpeed = 2.0f;
 	}
-
 	if ( speed != mSpeed ) {
 		mUiTree.find( NodeId_PauseImage ).setVisible( mSpeed != 0.0f );
 		mUiTree.find( NodeId_PlayImage ).setVisible( mSpeed == 0.0f );
-
 		if ( mSpeed == 0.0f ) {
 			mBufferPlayerNode->disable();
 		} else if ( speed == 0.0f ) {
 			mBufferPlayerNode->enable();
 		}
 	}
+
+	auto ctx = audio::Context::master();
+	if ( ctx ) {
+		if ( mSlider.isDragging() ) {
+			mBufferPlayerNode->seekToTime( (double)mSlider.getPosition() * l );
+		} else if ( mSpeed < 0.0f ) {
+			mBufferPlayerNode->seekToTime( max( e - s, 0.0 ) );
+		} else if ( mSpeed > 1.0f ) {
+			mBufferPlayerNode->seekToTime( min( e + s, l ) );
+		}
+	}
+
+	if ( mBufferPlayerNode && !mWaveform.empty() ) {
+		const float x = mSlider.getPosition() * mUiTree.find( NodeId_Waveform ).getScale().x; 
+		gl::VertBatch vb( GL_LINES );
+		for ( const vec2& v : mWaveform ) {
+			Colorf c = v.x > x ? Colorf::gray( 0.5f ) : Colorf( 0.9f, 0.3f, 0.8f );
+			vb.color( c );
+			vb.vertex( v );
+		}
+
+		if ( !mBatchWaveform ) {
+			mBatchWaveform = gl::Batch::create( vb, gl::getStockShader( gl::ShaderDef().color() ) );
+		} else {
+			mBatchWaveform->replaceVboMesh( gl::VboMesh::create( vb ) );
+		}
+	}
 }
 
 CINDER_APP( AudioPlayerApp, RendererGl(), []( App::Settings* settings )
 {
-	settings->setBorderless();
-	settings->setWindowSize( 1600, 900 );
+	settings->setWindowSize( 540, 960 );
 } )
  
-	

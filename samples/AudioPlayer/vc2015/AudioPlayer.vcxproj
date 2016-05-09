@@ -189,8 +189,6 @@
     <ResourceCompile Include="Resources.rc" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="..\resources\close.png" />
-    <Image Include="..\resources\drag.png" />
     <Image Include="..\resources\forward.png" />
     <Image Include="..\resources\pause.png" />
     <Image Include="..\resources\play.png" />

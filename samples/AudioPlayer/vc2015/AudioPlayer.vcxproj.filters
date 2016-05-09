@@ -66,12 +66,6 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="..\resources\close.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="..\resources\drag.png">
-      <Filter>Resource Files</Filter>
-    </Image>
     <Image Include="..\resources\forward.png">
       <Filter>Resource Files</Filter>
     </Image>
