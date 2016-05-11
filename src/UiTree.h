@@ -38,28 +38,28 @@ public:
 		inline virtual void touchOver( UiTreeT<T>*, uint32_t ) {}
 		inline virtual void update( UiTreeT<T>* ) {}
 
-		inline virtual void	connect( UiTreeT<T>& uiTree )
+		inline virtual void	connect( UiTreeT<T>& node )
 		{
-			uiTree.connectDisableEventHandler(		&EventHandlerInterface::disable,		this );
-			uiTree.connectEnableEventHandler(		&EventHandlerInterface::enable,			this );
-			uiTree.connectHideEventHandler(			&EventHandlerInterface::hide,			this );
-			uiTree.connectKeyDownEventHandler(		&EventHandlerInterface::keyDown,		this );
-			uiTree.connectKeyUpEventHandler(		&EventHandlerInterface::keyUp,			this );
-			uiTree.connectMouseDownEventHandler(	&EventHandlerInterface::mouseDown,		this );
-			uiTree.connectMouseDragEventHandler(	&EventHandlerInterface::mouseDrag,		this );
-			uiTree.connectMouseMoveEventHandler(	&EventHandlerInterface::mouseMove,		this );
-			uiTree.connectMouseOutEventHandler(		&EventHandlerInterface::mouseOut,		this );
-			uiTree.connectMouseOverEventHandler(	&EventHandlerInterface::mouseOver,		this );
-			uiTree.connectMouseUpEventHandler(		&EventHandlerInterface::mouseUp,		this );
-			uiTree.connectMouseWheelEventHandler(	&EventHandlerInterface::mouseWheel,		this );
-			uiTree.connectResizeEventHandler(		&EventHandlerInterface::resize,			this );
-			uiTree.connectShowEventHandler(			&EventHandlerInterface::show,			this );
-			uiTree.connectTouchesBeganEventHandler(	&EventHandlerInterface::touchesBegan, 	this );
-			uiTree.connectTouchesEndedEventHandler( &EventHandlerInterface::touchesEnded,	this );
-			uiTree.connectTouchesMovedEventHandler( &EventHandlerInterface::touchesMoved,	this );
-			uiTree.connectTouchOutEventHandler(		&EventHandlerInterface::touchOut,		this );
-			uiTree.connectTouchOverEventHandler(	&EventHandlerInterface::touchOver,		this );
-			uiTree.connectUpdateEventHandler(		&EventHandlerInterface::update,			this );
+			node.connectDisableEventHandler(		&EventHandlerInterface::disable,		this );
+			node.connectEnableEventHandler(			&EventHandlerInterface::enable,			this );
+			node.connectHideEventHandler(			&EventHandlerInterface::hide,			this );
+			node.connectKeyDownEventHandler(		&EventHandlerInterface::keyDown,		this );
+			node.connectKeyUpEventHandler(			&EventHandlerInterface::keyUp,			this );
+			node.connectMouseDownEventHandler(		&EventHandlerInterface::mouseDown,		this );
+			node.connectMouseDragEventHandler(		&EventHandlerInterface::mouseDrag,		this );
+			node.connectMouseMoveEventHandler(		&EventHandlerInterface::mouseMove,		this );
+			node.connectMouseOutEventHandler(		&EventHandlerInterface::mouseOut,		this );
+			node.connectMouseOverEventHandler(		&EventHandlerInterface::mouseOver,		this );
+			node.connectMouseUpEventHandler(		&EventHandlerInterface::mouseUp,		this );
+			node.connectMouseWheelEventHandler(		&EventHandlerInterface::mouseWheel,		this );
+			node.connectResizeEventHandler(			&EventHandlerInterface::resize,			this );
+			node.connectShowEventHandler(			&EventHandlerInterface::show,			this );
+			node.connectTouchesBeganEventHandler(	&EventHandlerInterface::touchesBegan, 	this );
+			node.connectTouchesEndedEventHandler(	&EventHandlerInterface::touchesEnded,	this );
+			node.connectTouchesMovedEventHandler(	&EventHandlerInterface::touchesMoved,	this );
+			node.connectTouchOutEventHandler(		&EventHandlerInterface::touchOut,		this );
+			node.connectTouchOverEventHandler(		&EventHandlerInterface::touchOver,		this );
+			node.connectUpdateEventHandler(			&EventHandlerInterface::update,			this );
 		} 
 	};
 

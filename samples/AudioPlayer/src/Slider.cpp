@@ -38,7 +38,7 @@ bool Slider::isDragging() const
 
 void Slider::setPosition( float v )
 {
-	mPosition = v;
+	mPosition = clamp( v, 0.0f, 1.0f );
 }
 
 void Slider::mouseDown( UiTree* node, MouseEvent& event ) 
@@ -63,17 +63,22 @@ void Slider::mouseUp( UiTree* node, MouseEvent& event )
 
 void Slider::touchesBegan( UiTree* node, TouchEvent& event ) 
 {
-	
+	if ( node->hasTouches() ) {
+		calcPosition( event.getTouches().begin()->getPos() );
+		mDragging = true;
+	}
 }
 
 void Slider::touchesEnded( UiTree* node, TouchEvent& event ) 
 {
-	
+	mDragging = false;
 }
 
 void Slider::touchesMoved( UiTree* node, TouchEvent& event ) 
 {
-	
+	if ( mDragging ) {
+		calcPosition( event.getTouches().begin()->getPos() );
+	}
 }
 
 void Slider::calcPosition( const ivec2& v )

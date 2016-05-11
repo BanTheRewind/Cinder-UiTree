@@ -80,20 +80,24 @@ void Button::mouseUp( UiTree* node, MouseEvent& event )
 void Button::touchesBegan( UiTree* node, TouchEvent& event ) 
 {
 	if ( node->hasTouches() ) {
-		mPressed = true;
+		if ( mBiased ) {
+			mPressed = true;
+		} else {
+			mPressed = !mPressed;
+		}
 	}
 }
 
 void Button::touchesEnded( UiTree* node, TouchEvent& event ) 
 {
-	if ( !mBiased && !node->hasTouches() ) {
+	if ( mBiased ) {
 		mPressed = false;
 	}
 }
 
 void Button::touchesMoved( UiTree* node, TouchEvent& event ) 
 {
-	if ( !mBiased && !node->hasTouches() ) {
+	if ( mBiased && !node->hasTouches() ) {
 		mPressed = false;
 	}
 }
