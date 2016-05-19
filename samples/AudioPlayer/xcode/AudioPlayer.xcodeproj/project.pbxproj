@@ -18,11 +18,17 @@
 		00B9955B1B128DF400A5C623 /* IOSurface.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B995591B128DF400A5C623 /* IOSurface.framework */; };
 		5323E6B20EAFCA74003A9687 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B10EAFCA74003A9687 /* CoreVideo.framework */; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
-		6EF2B468675045BEB39CF733 /* UiTree.h in Headers */ = {isa = PBXBuildFile; fileRef = 89A6A6257BB743F8BD2AFF8D /* UiTree.h */; };
-		B04AF6B1446949E5B028C5E9 /* AudioPlayerApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 32DFA40C14334529BBB81A8A /* AudioPlayerApp.cpp */; };
-		A073ABA096C14F33A360A66F /* AudioPlayer_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = 7CE7E822129D4ABC815C05D9 /* AudioPlayer_Prefix.pch */; };
 		9CAC16B29BBD40D6AF6AAAE9 /* CinderApp.icns in Resources */ = {isa = PBXBuildFile; fileRef = 89D6C68410ED4050B1FAF9BB /* CinderApp.icns */; };
-		CA816697D8C340CAA43E0FC4 /* Resources.h in Headers */ = {isa = PBXBuildFile; fileRef = 74EFFDEA5D1947BC9FDB098A /* Resources.h */; };
+		AECE8BC61CE25C300032A637 /* Button.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AECE8BC41CE25C300032A637 /* Button.cpp */; };
+		AECE8BC71CE25C300032A637 /* Slider.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AECE8BC51CE25C300032A637 /* Slider.cpp */; };
+		AECE8BCE1CE25C5D0032A637 /* forward.png in Resources */ = {isa = PBXBuildFile; fileRef = AECE8BC81CE25C5D0032A637 /* forward.png */; };
+		AECE8BCF1CE25C5D0032A637 /* let_s_go_outside_-_i_see_you_dancing.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = AECE8BC91CE25C5D0032A637 /* let_s_go_outside_-_i_see_you_dancing.mp3 */; };
+		AECE8BD01CE25C5D0032A637 /* pause.png in Resources */ = {isa = PBXBuildFile; fileRef = AECE8BCA1CE25C5D0032A637 /* pause.png */; };
+		AECE8BD11CE25C5D0032A637 /* play.png in Resources */ = {isa = PBXBuildFile; fileRef = AECE8BCB1CE25C5D0032A637 /* play.png */; };
+		AECE8BD21CE25C5D0032A637 /* rewind.png in Resources */ = {isa = PBXBuildFile; fileRef = AECE8BCC1CE25C5D0032A637 /* rewind.png */; };
+		AECE8BD31CE25C5D0032A637 /* scrub.png in Resources */ = {isa = PBXBuildFile; fileRef = AECE8BCD1CE25C5D0032A637 /* scrub.png */; };
+		AEEB1D281CE2AFE000B6BCB9 /* Control.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AEEB1D271CE2AFE000B6BCB9 /* Control.cpp */; };
+		B04AF6B1446949E5B028C5E9 /* AudioPlayerApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 32DFA40C14334529BBB81A8A /* AudioPlayerApp.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -38,14 +44,27 @@
 		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
+		32DFA40C14334529BBB81A8A /* AudioPlayerApp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; name = AudioPlayerApp.cpp; path = ../src/AudioPlayerApp.cpp; sourceTree = "<group>"; };
 		5323E6B10EAFCA74003A9687 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = /System/Library/Frameworks/CoreVideo.framework; sourceTree = "<absolute>"; };
+		74EFFDEA5D1947BC9FDB098A /* Resources.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Resources.h; path = ../include/Resources.h; sourceTree = "<group>"; };
+		7CE7E822129D4ABC815C05D9 /* AudioPlayer_Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = AudioPlayer_Prefix.pch; sourceTree = "<group>"; };
+		89A6A6257BB743F8BD2AFF8D /* UiTree.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = UiTree.h; path = ../../../src/UiTree.h; sourceTree = "<group>"; };
+		89D6C68410ED4050B1FAF9BB /* CinderApp.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = CinderApp.icns; path = ../resources/CinderApp.icns; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* AudioPlayer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AudioPlayer.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		74EFFDEA5D1947BC9FDB098A /* Resources.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ../include/Resources.h; sourceTree = "<group>"; name = Resources.h; };
-		89D6C68410ED4050B1FAF9BB /* CinderApp.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = ../resources/CinderApp.icns; sourceTree = "<group>"; name = CinderApp.icns; };
-		F70738767AD64E58A06383DE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; name = Info.plist; };
-		7CE7E822129D4ABC815C05D9 /* AudioPlayer_Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = AudioPlayer_Prefix.pch; sourceTree = "<group>"; name = AudioPlayer_Prefix.pch; };
-		32DFA40C14334529BBB81A8A /* AudioPlayerApp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; path = ../src/AudioPlayerApp.cpp; sourceTree = "<group>"; name = AudioPlayerApp.cpp; };
-		89A6A6257BB743F8BD2AFF8D /* UiTree.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ../../../src/UiTree.h; sourceTree = "<group>"; name = UiTree.h; };
+		AECE8BC01CE25C270032A637 /* Button.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Button.h; path = ../include/Button.h; sourceTree = "<group>"; };
+		AECE8BC11CE25C270032A637 /* Control.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Control.h; path = ../include/Control.h; sourceTree = "<group>"; };
+		AECE8BC21CE25C270032A637 /* NodeId.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = NodeId.h; path = ../include/NodeId.h; sourceTree = "<group>"; };
+		AECE8BC31CE25C270032A637 /* Slider.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Slider.h; path = ../include/Slider.h; sourceTree = "<group>"; };
+		AECE8BC41CE25C300032A637 /* Button.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Button.cpp; path = ../src/Button.cpp; sourceTree = "<group>"; };
+		AECE8BC51CE25C300032A637 /* Slider.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Slider.cpp; path = ../src/Slider.cpp; sourceTree = "<group>"; };
+		AECE8BC81CE25C5D0032A637 /* forward.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = forward.png; path = ../resources/forward.png; sourceTree = "<group>"; };
+		AECE8BC91CE25C5D0032A637 /* let_s_go_outside_-_i_see_you_dancing.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = "let_s_go_outside_-_i_see_you_dancing.mp3"; path = "../resources/let_s_go_outside_-_i_see_you_dancing.mp3"; sourceTree = "<group>"; };
+		AECE8BCA1CE25C5D0032A637 /* pause.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = pause.png; path = ../resources/pause.png; sourceTree = "<group>"; };
+		AECE8BCB1CE25C5D0032A637 /* play.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = play.png; path = ../resources/play.png; sourceTree = "<group>"; };
+		AECE8BCC1CE25C5D0032A637 /* rewind.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = rewind.png; path = ../resources/rewind.png; sourceTree = "<group>"; };
+		AECE8BCD1CE25C5D0032A637 /* scrub.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = scrub.png; path = ../resources/scrub.png; sourceTree = "<group>"; };
+		AEEB1D271CE2AFE000B6BCB9 /* Control.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Control.cpp; path = ../src/Control.cpp; sourceTree = "<group>"; };
+		F70738767AD64E58A06383DE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -70,10 +89,21 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		01B97315FEAEA392516A2CEA /* Blocks */ = {
+			isa = PBXGroup;
+			children = (
+				A16F9E5691AC40268D93EFC3 /* UiTree */,
+			);
+			name = Blocks;
+			sourceTree = "<group>";
+		};
 		080E96DDFE201D6D7F000001 /* Source */ = {
 			isa = PBXGroup;
 			children = (
 				32DFA40C14334529BBB81A8A /* AudioPlayerApp.cpp */,
+				AECE8BC41CE25C300032A637 /* Button.cpp */,
+				AEEB1D271CE2AFE000B6BCB9 /* Control.cpp */,
+				AECE8BC51CE25C300032A637 /* Slider.cpp */,
 			);
 			name = Source;
 			sourceTree = "<group>";
@@ -126,6 +156,43 @@
 			name = AudioPlayer;
 			sourceTree = "<group>";
 		};
+		29B97315FDCFA39411CA2CEA /* Headers */ = {
+			isa = PBXGroup;
+			children = (
+				AECE8BC01CE25C270032A637 /* Button.h */,
+				AECE8BC11CE25C270032A637 /* Control.h */,
+				AECE8BC21CE25C270032A637 /* NodeId.h */,
+				AECE8BC31CE25C270032A637 /* Slider.h */,
+				74EFFDEA5D1947BC9FDB098A /* Resources.h */,
+				7CE7E822129D4ABC815C05D9 /* AudioPlayer_Prefix.pch */,
+			);
+			name = Headers;
+			sourceTree = "<group>";
+		};
+		29B97317FDCFA39411CA2CEA /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				AECE8BC81CE25C5D0032A637 /* forward.png */,
+				AECE8BC91CE25C5D0032A637 /* let_s_go_outside_-_i_see_you_dancing.mp3 */,
+				AECE8BCA1CE25C5D0032A637 /* pause.png */,
+				AECE8BCB1CE25C5D0032A637 /* play.png */,
+				AECE8BCC1CE25C5D0032A637 /* rewind.png */,
+				AECE8BCD1CE25C5D0032A637 /* scrub.png */,
+				89D6C68410ED4050B1FAF9BB /* CinderApp.icns */,
+				F70738767AD64E58A06383DE /* Info.plist */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+		};
+		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */,
+				1058C7A2FEA54F0111CA2CBB /* Other Frameworks */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		5FBE724036D946F0B66F722F /* src */ = {
 			isa = PBXGroup;
 			children = (
@@ -140,41 +207,6 @@
 				5FBE724036D946F0B66F722F /* src */,
 			);
 			name = UiTree;
-			sourceTree = "<group>";
-		};
-		01B97315FEAEA392516A2CEA /* Blocks */ = {
-			isa = PBXGroup;
-			children = (
-				A16F9E5691AC40268D93EFC3 /* UiTree */,
-			);
-			name = Blocks;
-			sourceTree = "<group>";
-		};
-		29B97315FDCFA39411CA2CEA /* Headers */ = {
-			isa = PBXGroup;
-			children = (
-				74EFFDEA5D1947BC9FDB098A /* Resources.h */,
-				7CE7E822129D4ABC815C05D9 /* AudioPlayer_Prefix.pch */,
-			);
-			name = Headers;
-			sourceTree = "<group>";
-		};
-		29B97317FDCFA39411CA2CEA /* Resources */ = {
-			isa = PBXGroup;
-			children = (
-				89D6C68410ED4050B1FAF9BB /* CinderApp.icns */,
-				F70738767AD64E58A06383DE /* Info.plist */,
-			);
-			name = Resources;
-			sourceTree = "<group>";
-		};
-		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */,
-				1058C7A2FEA54F0111CA2CBB /* Other Frameworks */,
-			);
-			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -203,6 +235,8 @@
 /* Begin PBXProject section */
 		29B97313FDCFA39411CA2CEA /* Project object */ = {
 			isa = PBXProject;
+			attributes = {
+			};
 			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "AudioPlayer" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
@@ -227,7 +261,13 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AECE8BCF1CE25C5D0032A637 /* let_s_go_outside_-_i_see_you_dancing.mp3 in Resources */,
+				AECE8BD11CE25C5D0032A637 /* play.png in Resources */,
 				9CAC16B29BBD40D6AF6AAAE9 /* CinderApp.icns in Resources */,
+				AECE8BD31CE25C5D0032A637 /* scrub.png in Resources */,
+				AECE8BD01CE25C5D0032A637 /* pause.png in Resources */,
+				AECE8BD21CE25C5D0032A637 /* rewind.png in Resources */,
+				AECE8BCE1CE25C5D0032A637 /* forward.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -239,6 +279,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				B04AF6B1446949E5B028C5E9 /* AudioPlayerApp.cpp in Sources */,
+				AEEB1D281CE2AFE000B6BCB9 /* Control.cpp in Sources */,
+				AECE8BC71CE25C300032A637 /* Slider.cpp in Sources */,
+				AECE8BC61CE25C300032A637 /* Button.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -249,17 +292,17 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COMBINE_HIDPI_IMAGES = YES;
-				DEAD_CODE_STRIPPING = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = AudioPlayer_Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
 				);
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = AudioPlayer_Prefix.pch;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
@@ -281,12 +324,12 @@
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
 				GCC_OPTIMIZATION_LEVEL = 3;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = AudioPlayer_Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"NDEBUG=1",
 					"$(inherited)",
 				);
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = AudioPlayer_Prefix.pch;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
@@ -303,7 +346,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				CINDER_PATH = "../../../../..";
+				CINDER_PATH = ../../../../..;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++11";
 				CLANG_CXX_LIBRARY = "libc++";
 				ENABLE_TESTABILITY = YES;
@@ -313,10 +356,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
-				USER_HEADER_SEARCH_PATHS = (
-					"\"$(CINDER_PATH)/include\" ../include",
-					../../../src,
-				);
+				USER_HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\" ../include ../../../src";
 			};
 			name = Debug;
 		};
@@ -324,7 +364,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				CINDER_PATH = "../../../../..";
+				CINDER_PATH = ../../../../..;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++11";
 				CLANG_CXX_LIBRARY = "libc++";
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
@@ -332,10 +372,7 @@
 				HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\"";
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				SDKROOT = macosx;
-				USER_HEADER_SEARCH_PATHS = (
-					"\"$(CINDER_PATH)/include\" ../include",
-					../../../src,
-				);
+				USER_HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\" ../include ../../../src";
 			};
 			name = Release;
 		};

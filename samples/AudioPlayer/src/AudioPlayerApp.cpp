@@ -124,10 +124,11 @@ AudioPlayerApp::AudioPlayerApp()
 	auto ctx = audio::Context::master();
 	if ( ctx ) {
 		ctx->enable();
+		
 		mBufferPlayerNode = ctx->makeNode( 
 			new audio::BufferPlayerNode( 
 				audio::load( loadResource( RES_SAMPLE ), 
-				ctx->getSampleRate() )->loadBuffer() 
+				ctx->getSampleRate() )->loadBuffer()
 				) 
 			);
 		mBufferPlayerNode >> ctx->getOutput();
@@ -219,7 +220,7 @@ void AudioPlayerApp::resize()
 	float c = w / 3.0f;
 	float r = h / 5.0f;
 
-	// Columna and row position.
+	// Column and row position.
 	float x = 0.0f;
 	float y = 0.0f;
 
@@ -406,6 +407,7 @@ void AudioPlayerApp::update()
 
 CINDER_APP( AudioPlayerApp, RendererGl(), []( App::Settings* settings )
 {
+	settings->setMultiTouchEnabled();
 	settings->setWindowSize( 540, 960 );
 } )
  

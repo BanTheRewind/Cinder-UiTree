@@ -10,11 +10,15 @@ public:
 
 	Slider&	operator=( const Slider& rhs );
 
+	// Sets the normalized slider position [ 0.0 - 1.0 ].
 	Slider&	position( float v );
 	
+	// Returns the normalized slider position.
 	float	getPosition() const;
+	// Returns true if user is dragging slider.
 	bool	isDragging() const;
 
+	// Sets the normalized slider position [ 0.0 - 1.0 ].
 	void	setPosition( float v );
 
 	void	mouseDown( UiTree* node, ci::app::MouseEvent& event ) override;

@@ -10,6 +10,7 @@ typedef UiTreeT<ci::ColorAf> UiTree;
 class Control : public UiTree::EventHandlerInterface
 {
 public:
+	virtual void connect( UiTree& node ) override;
 	virtual void mouseDown( UiTree* node, ci::app::MouseEvent& event ) = 0;
 	virtual void mouseDrag( UiTree* node, ci::app::MouseEvent& event ) = 0;
 	virtual void mouseUp( UiTree* node, ci::app::MouseEvent& event ) = 0;
