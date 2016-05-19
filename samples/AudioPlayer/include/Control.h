@@ -3,8 +3,10 @@
 #include "NodeId.h"
 #include "UiTree.h"
 
+// Short hand for a UI tree which stores its color.
 typedef UiTreeT<ci::ColorAf> UiTree;
- 
+
+// Extend the event handler into a UI control.
 class Control : public UiTree::EventHandlerInterface
 {
 public:

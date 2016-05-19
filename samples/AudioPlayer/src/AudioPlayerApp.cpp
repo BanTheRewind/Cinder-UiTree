@@ -72,7 +72,7 @@ AudioPlayerApp::AudioPlayerApp()
 			.enable()
 			);
 	mButtonPlay
-		.biased( false ) // Keep button on after release.
+		.biased( false ) // Keeps button on after press (ie, switch).
 		.connect( 
 			mUiTree.createAndReturnChild( NodeId_Play )
 				.createChild( NodeId_PlayRect )
