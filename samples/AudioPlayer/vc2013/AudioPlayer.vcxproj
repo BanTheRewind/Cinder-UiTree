@@ -1,3 +1,4 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -187,14 +188,29 @@
   <ItemGroup>
     <ResourceCompile Include="Resources.rc" />
   </ItemGroup>
-  <ItemGroup />
-  <ItemGroup />
   <ItemGroup>
+    <Image Include="..\resources\forward.png" />
+    <Image Include="..\resources\pause.png" />
+    <Image Include="..\resources\play.png" />
+    <Image Include="..\resources\rewind.png" />
+    <Image Include="..\resources\scrub.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Media Include="..\resources\let_s_go_outside_-_i_see_you_dancing.mp3" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\include\Button.h" />
+    <ClInclude Include="..\include\Control.h" />
+    <ClInclude Include="..\include\NodeId.h" />
     <ClInclude Include="..\include\Resources.h" />
     <ClInclude Include="..\..\..\src\UiTree.h" />
+    <ClInclude Include="..\include\Slider.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\AudioPlayerApp.cpp" />
+    <ClCompile Include="..\src\Button.cpp" />
+    <ClCompile Include="..\src\Control.cpp" />
+    <ClCompile Include="..\src\Slider.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />
