@@ -206,6 +206,7 @@
   <ItemGroup>
     <ClCompile Include="..\src\AudioPlayerApp.cpp" />
     <ClCompile Include="..\src\Button.cpp" />
+    <ClCompile Include="..\src\Control.cpp" />
     <ClCompile Include="..\src\Slider.cpp" />
   </ItemGroup>
   <ItemGroup>
