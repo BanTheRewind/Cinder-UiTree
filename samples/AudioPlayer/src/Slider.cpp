@@ -38,7 +38,7 @@ bool Slider::isDragging() const
 
 void Slider::setPosition( float v )
 {
-	mPosition = clamp( v, 0.0f, 1.0f );
+	mPosition = math<float>::clamp( v, 0.0f, 1.0f );
 }
 
 void Slider::mouseDown( UiTree* node, MouseEvent& event ) 
