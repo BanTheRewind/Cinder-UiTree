@@ -201,16 +201,16 @@
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\EventHandler.cpp" />
     <ClCompile Include="..\src\TutorialApp.cpp" />
+    <ClCompile Include="..\src\UiData.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Resources.rc" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\src\UiTree.h" />
-    <ClInclude Include="..\include\EventHandler.h" />
     <ClInclude Include="..\include\Resources.h" />
+    <ClInclude Include="..\include\UiData.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="..\..\resources\cinder_app_icon.ico" />
