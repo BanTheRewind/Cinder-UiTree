@@ -1346,7 +1346,7 @@ public:
 		}
 	}
 protected:
-	inline void keyDown( ci::app::KeyEvent event )
+	inline void keyDown( ci::app::KeyEvent& event )
 	{
 		if ( mEnabled ) {
 			for ( auto& iter : mChildren ) {
@@ -1361,7 +1361,7 @@ protected:
 		}
 	}
 
-	inline void keyUp( ci::app::KeyEvent event )
+	inline void keyUp( ci::app::KeyEvent& event )
 	{
 		if ( mEnabled ) {
 			for ( auto& iter : mChildren ) {
@@ -1376,7 +1376,7 @@ protected:
 		}
 	}
 
-	inline void mouseDown( ci::app::MouseEvent event )
+	inline void mouseDown( ci::app::MouseEvent& event )
 	{
 		if ( mEnabled ) {
 			bool handled = false;
@@ -1394,7 +1394,7 @@ protected:
 		}
 	}
 
-	inline void mouseDrag( ci::app::MouseEvent event )
+	inline void mouseDrag( ci::app::MouseEvent& event )
 	{
 		if ( mEnabled ) {
 			bool handled = false;
@@ -1412,7 +1412,7 @@ protected:
 		}
 	}
 
-	inline void mouseMove( ci::app::MouseEvent event )
+	inline void mouseMove( ci::app::MouseEvent& event )
 	{
 		if ( mEnabled ) {
 			bool handled = false;
@@ -1430,7 +1430,7 @@ protected:
 		}
 	}
 
-	inline void mouseOver( ci::app::MouseEvent event )
+	inline void mouseOver( ci::app::MouseEvent& event )
 	{
 		bool mouseOver	= mMouseOver;
 		mMouseOver		= contains( ci::vec2( event.getPos() ), mCollisionType );
@@ -1443,7 +1443,7 @@ protected:
 		}
 	}
 
-	inline void mouseUp( ci::app::MouseEvent event )
+	inline void mouseUp( ci::app::MouseEvent& event )
 	{
 		if ( mEnabled ) {
 			bool handled = false;
@@ -1461,7 +1461,7 @@ protected:
 		}
 	}
 
-	inline void mouseWheel( ci::app::MouseEvent event )
+	inline void mouseWheel( ci::app::MouseEvent& event )
 	{
 		if ( mEnabled ) {
 			for ( auto& iter : mChildren ) {
