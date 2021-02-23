@@ -91,7 +91,9 @@ public:
 	mScaleVelocity( ci::vec3( 0.0f ) ), mScaleVelocityDecay( 0.0f ), 
 	mTranslate( ci::vec3( 0.0f ) ), mTranslateSpeed( 1.0f ), 
 	mTranslateTarget( ci::vec3( 0.0f ) ), mTranslateVelocity( ci::vec3( 0.0f ) ), 
-	mTranslateVelocityDecay( 0.0f ), mVisible( false )
+	mTranslateVelocityDecay( 0.0f ), mVisible( false ),
+	mSize(ci::vec3(0.f)), mContainsAbsolute(false), mWindowRef(nullptr)
+
 	{
 	}
 
@@ -162,6 +164,9 @@ public:
 		mTranslateVelocity				= rhs.mTranslateVelocity;
 		mTranslateVelocityDecay			= rhs.mTranslateVelocityDecay;
 		mVisible						= rhs.mVisible;
+		mSize							= rhs.mSize;
+		mContainsAbsolute				= rhs.mContainsAbsolute;
+		mWindowRef						= rhs.mWindowRef;
 
 		return *this;
 	}
@@ -392,12 +397,28 @@ public:
 		return *this;
 	}
 
+	inline UiTreeT<T>& window(const ci::app::WindowRef& window)
+	{
+		setWindow(window);
+		return *this;
+	}
+
 	inline ci::mat4 calcModelMatrix() const
 	{
-		ci::mat4 m( 1.0f );
-		m = glm::translate( m, mTranslate - mRegistration );
-		m *= glm::toMat4( mRotation );
-		m = glm::scale( m, mScale );
+		ci::mat4 m = glm::translate( mTranslate );
+		m *= glm::toMat4(mRotation );
+		m *= glm::scale( mScale );
+		m *= glm::translate( -mRegistration);
+		return m;
+	}
+
+	inline ci::mat4 calcAbsoluteModelMatrix() const
+	{
+		ci::mat4 m = calcModelMatrix();
+		const UiTreeT<T>* parent = mParent;
+		if (parent != nullptr) {
+			m = parent->calcAbsoluteModelMatrix() * m;
+		}
 		return m;
 	}
 
@@ -577,32 +598,47 @@ public:
 		return contains( ci::vec3( v, 0.0f ), t, id );
 	}
 
-	inline bool contains( const ci::vec3& v, CollisionType t = CollisionType_Cube, uint64_t* id = nullptr ) const
+	inline bool contains(const ci::vec3& v, CollisionType t = CollisionType_Cube, uint64_t* id = nullptr) const
 	{
-		const ci::vec3& p = mTranslate - mRegistration;
-		bool hit = false;
-		switch ( t ) {
-		case CollisionType_Circle:
-			hit = glm::distance( ci::vec2( p ), ci::vec2( v ) ) < std::min( mScale.x, mScale.y );
-			break;
-		case CollisionType_Cube:
-			hit = ci::AxisAlignedBox( p - mScale * 0.5f, p + mScale * 0.5f ).contains( v );
-			break;
-		case CollisionType_Rect:
-			hit = ci::Rectf( ci::vec2( p ), ci::vec2( p ) + ci::vec2( mScale ) ).contains( ci::vec2( v ) );
-			break;
-		case CollisionType_Sphere:
-			hit = glm::distance( p, v ) < std::min( mScale.x, std::min( mScale.y, mScale.z ) );
-			break;
+		ci::vec3 p;
+		ci::vec3 v2;
+		vec3 size;
+		if (mContainsAbsolute) {
+			p = ci::vec3(0.f);
+			v2 = ci::vec3(screenToObject(ci::vec2(v.x, v.y), v.z), v.z);
+			size = mSize;
 		}
-		if ( hit ) {
-			if ( id != nullptr ) {
-				*id = mId;
+		else {
+			p = mTranslate - mRegistration;
+			v2 = v;
+			size = mSize * mScale;
+		}
+		bool zero = size.x == 0.f && size.y == 0.f && size.z == 0.f;
+		if (!zero) {
+			bool hit = false;
+			switch (t) {
+			case CollisionType_Circle:
+				hit = glm::distance(ci::vec2(p), ci::vec2(v2)) < std::min(size.x, size.y);
+				break;
+			case CollisionType_Cube:
+				hit = ci::AxisAlignedBox(p - size * 0.5f, p + size * 0.5f).contains(v2);
+				break;
+			case CollisionType_Rect:
+				hit = ci::Rectf(ci::vec2(p), ci::vec2(p) + ci::vec2(size)).contains(ci::vec2(v2));
+				break;
+			case CollisionType_Sphere:
+				hit = glm::distance(p, v2) < std::min(size.x, std::min(size.y, size.z));
+				break;
 			}
-			return true;
+			if (hit) {
+				if (id != nullptr) {
+					*id = mId;
+				}
+				return true;
+			}
 		}
-		for ( const std::pair<uint64_t, UiTreeT<T>>& iter : mChildren ) {
-			if ( iter.second.contains( v - p, t, id ) ) {
+		for (const std::pair<uint64_t, UiTreeT<T>>& iter : mChildren) {
+			if (iter.second.contains(v - p, t, id)) {
 				return true;
 			}
 		}
@@ -748,7 +784,7 @@ public:
 		mEnabled	= enabled;
 		if ( prev != mEnabled ) {
 			if ( mEnabled ) {
-				ci::app::WindowRef window = ci::app::getWindow();
+				ci::app::WindowRef window = getWindow();
 				if ( mParent == nullptr && window != nullptr ) {
 					mConnectionKeyDown = window->getSignalKeyDown().connect( 1, 
 						[ this ]( ci::app::KeyEvent& event ) { keyDown( event ); } );
@@ -871,7 +907,7 @@ public:
 
 	inline void setScale( const ci::vec2& v, float speed = 1.0f )
 	{
-		setScale( ci::vec3( v, 0.0f ), speed );
+		setScale( ci::vec3( v, 1.0f ), speed );
 	}
 
 	inline void setScale( const ci::vec3& v, float speed = 1.0f )
@@ -925,6 +961,68 @@ public:
 		mTranslateTarget		= mTranslate;
 		mTranslateVelocity		= v;
 		mTranslateVelocityDecay	= decay;
+	}
+
+	inline const ci::vec3& getSize() const
+	{
+		return mSize;
+	}
+
+	inline void setSize(const ci::vec2& v)
+	{
+		setSize(ci::vec3(v, 0.0f));
+	}
+
+	inline void setSize(const ci::vec3& v)
+	{
+		mSize = v;
+	}
+
+	inline UiTreeT<T>& size(const ci::vec2& v)
+	{
+		setSize(v);
+		return *this;
+	}
+
+	inline UiTreeT<T>& size(const ci::vec3& v)
+	{
+		setSize(v);
+		return *this;
+	}
+
+	inline const bool getContainsAbsolute() const
+	{
+		return mContainsAbsolute;
+	}
+
+	inline void setContainsAbsolute(bool b = true)
+	{
+		mContainsAbsolute = b;
+	}
+
+	inline UiTreeT<T>& containsAbsolute(bool b = true)
+	{
+		setContainsAbsolute(b);
+		return *this;
+	}
+
+	inline ci::app::WindowRef getWindow()
+	{
+		if (mWindowRef)
+			return mWindowRef;
+		else {
+			ci::app::WindowRef windowRoot = getRoot().mWindowRef;
+			if (windowRoot)
+				return windowRoot;
+			else
+				return ci::app::getWindow();
+		}
+		return nullptr;
+	}
+
+	inline void setWindow(const ci::app::WindowRef& window)
+	{
+		mWindowRef = window;
 	}
 
 	inline UiTreeT<T>& connectDisableEventHandler( const std::function<void( UiTreeT<T>* )>& eventHandler )
@@ -1345,6 +1443,7 @@ public:
 			mEventHandlerUpdate( this );
 		}
 	}
+
 protected:
 	inline void keyDown( ci::app::KeyEvent& event )
 	{
@@ -1601,6 +1700,25 @@ protected:
 		return count + 1;
 	}
 
+	inline ci::vec2 screenToObject(const ci::vec2 &pt, float z = 0.f) const
+	{
+		// Build the viewport (x, y, width, height).
+		ci::vec2 offset = ci::gl::getViewport().first;
+		ci::vec2 size = ci::gl::getViewport().second;
+		ci::vec4 viewport = ci::vec4(offset.x, offset.y, size.x, size.y);
+
+		// Calculate the view-projection matrix.
+		ci::mat4 model = calcAbsoluteModelMatrix();
+		ci::mat4 viewProjection = gl::getProjectionMatrix() * gl::getViewMatrix();
+
+		// Calculate the intersection of the mouse ray with the near (z=0) and far (z=1) planes.
+		ci::vec3 near_ = glm::unProject(ci::vec3(pt.x, size.y - pt.y - 1, 0), model, viewProjection, viewport);
+		ci::vec3 far_ = glm::unProject(ci::vec3(pt.x, size.y - pt.y - 1, 1), model, viewProjection, viewport);
+
+		// Calculate world position.
+		return ci::vec2(ci::lerp(near_, far_, (z - near_.z) / (far_.z - near_.z)));
+	}
+
 	std::map<uint64_t, UiTreeT<T>>								mChildren;
 	T															mData;
 	uint64_t													mId;
@@ -1636,6 +1754,9 @@ protected:
 	ci::vec3													mTranslateVelocity;
 	float														mTranslateVelocityDecay;
 
+	ci::vec3													mSize;
+	bool														mContainsAbsolute;
+
 	ci::signals::Connection										mConnectionKeyDown;
 	ci::signals::Connection										mConnectionKeyUp;
 	ci::signals::Connection										mConnectionMouseDown;
@@ -1669,6 +1790,7 @@ protected:
 	std::function<void( UiTreeT<T>*, uint32_t )>				mEventHandlerTouchOver;
 	std::function<void( UiTreeT<T>* )>							mEventHandlerUpdate;
 
+	ci::app::WindowRef											mWindowRef;
 	/////////////////////////////////////////////////////////////////////////////////
 
 public:
